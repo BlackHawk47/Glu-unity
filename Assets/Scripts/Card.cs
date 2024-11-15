@@ -22,7 +22,11 @@ public class Card : MonoBehaviour
 
     [SerializeField] Quaternion targetRotation;
 
-   //[SerializeField] float percentage;
+    [SerializeField] SpriteRenderer frontRenderer;
+
+    [SerializeField] SpriteRenderer backRenderer;
+
+    //[SerializeField] float percentage;
     private void Start()
     {
         
@@ -57,13 +61,14 @@ public class Card : MonoBehaviour
     private void Awake()
     {
         status = CardStatus.show_back;
+        GetFrontAndBackSpriteRenderers();
     }
 
     //als je klikt laat het zien dat je hebt geklikt
 
     private void OnMouseUp()
     {
-        Debug.Log("geklikt op de kaart");
+        //Debug.Log("geklikt op de kaart");
         //als hij de achterkant laat zien en er wordt geklikt draai dan om
         if (status == CardStatus.show_back)
         {
@@ -90,5 +95,37 @@ public class Card : MonoBehaviour
         turnTimer = 0;
         startRotation = transform.rotation;
         targetRotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    private void GetFrontAndBackSpriteRenderers()
+    {
+        foreach(Transform t  in transform)
+        {
+            if (t.name == "Front")
+            {
+                    frontRenderer = t.GetComponent<SpriteRenderer>();
+            } 
+            
+            else if (t.name == "Back")
+            {
+                backRenderer = t.GetComponent<SpriteRenderer>();
+            }
+        }
+    }
+
+    public void SetFront(Sprite sprite)
+    {
+        if (frontRenderer != null)
+        {
+            frontRenderer.sprite = sprite;
+        }
+    }
+
+    public void SetBack(Sprite sprite)
+    {
+        if (backRenderer != null)
+        {
+            backRenderer.sprite = sprite;
+        }
     }
 }
