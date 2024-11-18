@@ -40,6 +40,9 @@ public class Game : MonoBehaviour
     [SerializeField] public GameObject[] selectedCards;
 
     [SerializeField] GameStatus status;
+
+    [SerializeField] private float timeoutTimer;
+    [SerializeField] public float timeoutTarget;
     private void MakeCards()
     {
         CalculateAmountOfPairs();
@@ -167,22 +170,75 @@ public class Game : MonoBehaviour
             }
         }
     }
-
+    //de kaarten waar op zijn geklikt
     public void SelectCard(GameObject Card)
     {
        if (status == GameStatus.waiting_on_first_card)
         {
-            //selectedCards = 0;
+            selectedCards[0] = Card;
+            status = GameStatus.waiting_on_second_card;
+        } 
+        else if (status == GameStatus.waiting_on_second_card)
+        {
+            selectedCards[1] = Card;
+            CheckForMatchingPair();
         }
     }
 
     private void CheckForMatchingPair()
     {
+        timeoutTimer = 0;
 
+        if (selectedCards[0].name == selectedCards[1].name)
+        {
+            status = GameStatus.match_found;
+        }
+        else
+        {
+            status = GameStatus.no_match_found;
+        }
     }
 
     private void RotateBackOrRemovePair()
     {
+        timeoutTimer += Time.deltaTime;
+
+        if(timeoutTimer >= timeoutTarget)
+        {
+            if(status == GameStatus.match_found)
+            {
+                selectedCards[0].SetActive(false);
+                selectedCards[1].SetActive(false);
+            }
+
+            if(status == GameStatus.no_match_found)
+            {
+                selectedCards[0].GetComponent<Card>().TurnToBack();
+                selectedCards[1].GetComponent<Card>().TurnToBack();
+            }
+
+            selectedCards[0] = null;
+            selectedCards[1] = null;
+            status = GameStatus.waiting_on_first_card;
+        }
+    }
+
+    public bool AllowedToSelectCard(Card card)
+    {    
+        if (selectedCards[0] == null)
+        {
+            return true;
+        }
+
+        if (selectedCards[1] == null)
+        {
+            if (selectedCards[0] != card.gameObject)
+            {
+                return true;
+            }
+        }
+        return false;
+
 
     }
 
@@ -193,11 +249,14 @@ public class Game : MonoBehaviour
         DistributeCards();
 
         selectedCards = new GameObject[2];
-        status = GameStatus.waiting_on_second_card;
+        status = GameStatus.waiting_on_first_card;
     }
 
     private void Update()
     {
-        
+        if(status == GameStatus.match_found || status == GameStatus.no_match_found)
+        {
+            RotateBackOrRemovePair();
+        }
     }
 }

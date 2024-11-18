@@ -54,7 +54,7 @@ public class Card : MonoBehaviour
                 { 
                     status = CardStatus.show_front;
 
-                    game.SelectCard(gameObject);
+                    //game.SelectCard(gameObject);
                 }
             }
         }
@@ -72,16 +72,21 @@ public class Card : MonoBehaviour
 
     private void OnMouseUp()
     {
-        //Debug.Log("geklikt op de kaart");
         //als hij de achterkant laat zien en er wordt geklikt draai dan om
-        if (status == CardStatus.show_back)
+        if (game.AllowedToSelectCard(this) == true)
         {
-            TurnToFront();
-        } 
-        
-        else if (status == CardStatus.show_front)
-        { 
-            TurnToBack();
+
+
+            if (status == CardStatus.show_back)
+            {
+                game.SelectCard(gameObject);
+                TurnToFront();
+            }
+
+            else if (status == CardStatus.show_front)
+            {
+                TurnToBack();
+            }
         }
     }
     
