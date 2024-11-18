@@ -26,6 +26,7 @@ public class Card : MonoBehaviour
 
     [SerializeField] SpriteRenderer backRenderer;
 
+    [SerializeField] public Game game;
     //[SerializeField] float percentage;
     private void Start()
     {
@@ -51,7 +52,9 @@ public class Card : MonoBehaviour
 
                 else if (status == CardStatus.rotating_to_front) 
                 { 
-                    status = CardStatus.show_front; 
+                    status = CardStatus.show_front;
+
+                    game.SelectCard(gameObject);
                 }
             }
         }
@@ -62,6 +65,7 @@ public class Card : MonoBehaviour
     {
         status = CardStatus.show_back;
         GetFrontAndBackSpriteRenderers();
+        game = FindFirstObjectByType<Game>();
     }
 
     //als je klikt laat het zien dat je hebt geklikt
@@ -127,5 +131,23 @@ public class Card : MonoBehaviour
         {
             backRenderer.sprite = sprite;
         }
+    }
+
+    public Vector2 GetFrontSize()
+    {
+        if(frontRenderer == null)
+        {
+            Debug.LogError("er is geen frontrenderer gevonden");
+        }
+        return frontRenderer.bounds.size;
+    }
+
+    public Vector2 GetBackSize()
+    {
+        if (backRenderer == null)
+        {
+            Debug.LogError("er is geen backrenderer gevonden");
+        }
+        return backRenderer.bounds.size;
     }
 }

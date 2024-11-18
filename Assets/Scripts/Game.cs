@@ -2,7 +2,14 @@ using System.Linq.Expressions;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+public enum GameStatus
+{
+    waiting_on_first_card,
+    waiting_on_second_card,
+    match_found,
+    no_match_found
 
+}
 public class Game : MonoBehaviour
 
 {
@@ -24,7 +31,15 @@ public class Game : MonoBehaviour
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] private Stack<GameObject> stackOfCards;
     [SerializeField] private GameObject[,] placedCards;
-    
+
+    [SerializeField] private Transform fieldAnchor;
+
+    [SerializeField] private float offsetX;
+    [SerializeField] private float offsetY;
+
+    [SerializeField] public GameObject[] selectedCards;
+
+    [SerializeField] GameStatus status;
     private void MakeCards()
     {
         CalculateAmountOfPairs();
@@ -36,7 +51,9 @@ public class Game : MonoBehaviour
 
     private void DistributeCards()
     {
-
+        int[,] nonJagged = new int[Columns, Rows];
+        ShuffleCards();
+        PlaceCardsOnField();
     }
 
     private void LoadSprites()
@@ -90,7 +107,7 @@ public class Game : MonoBehaviour
     private void ConstructCards()
     {
         stackOfCards = new Stack<GameObject>();
-
+            
         GameObject parent = new GameObject();
         parent.name = "Cards";
 
@@ -112,11 +129,71 @@ public class Game : MonoBehaviour
         }
     }
 
+    private void ShuffleCards()
+    {
+        while(stackOfCards.Count > 0)
+        {
+            int randX = Random.Range(0, Columns);
+            int randY = Random.Range(0, Rows);
+
+            if (placedCards[randX, randY] == null)
+            {
+                Debug.Log("kaart" + stackOfCards.Peek().name + " is geplaatst op x: " + randX + " y: " + randY);
+                placedCards[randX, randY] = stackOfCards.Pop();
+            }
+        }
+    }
+
+    
+
+    private void PlaceCardsOnField()
+    {
+        for (int y = 0; y < Rows; y++)
+        {
+            for (int x = 0; x < Columns; x++)
+            {
+                GameObject card = placedCards[x, y];
+
+                Card cardscript = card.GetComponent<Card>();
+
+                Vector2 cardsize = cardscript.GetBackSize();
+
+                float xpos = fieldAnchor.transform.position.x + (x * (cardsize.x + offsetX));
+                float ypos = fieldAnchor.transform.position.y + (y * (cardsize.y + offsetY));
+
+                print(card.transform.lossyScale.x);
+
+                placedCards[x, y].transform.position = new Vector3(xpos, ypos, 0f);
+            }
+        }
+    }
+
+    public void SelectCard(GameObject Card)
+    {
+       if (status == GameStatus.waiting_on_first_card)
+        {
+            //selectedCards = 0;
+        }
+    }
+
+    private void CheckForMatchingPair()
+    {
+
+    }
+
+    private void RotateBackOrRemovePair()
+    {
+
+    }
+
     private void Start()
     {
+        placedCards = new GameObject[Columns, Rows];
         MakeCards();
         DistributeCards();
 
+        selectedCards = new GameObject[2];
+        status = GameStatus.waiting_on_second_card;
     }
 
     private void Update()
