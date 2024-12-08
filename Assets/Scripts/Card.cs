@@ -27,13 +27,8 @@ public class Card : MonoBehaviour
     [SerializeField] SpriteRenderer backRenderer;
 
     [SerializeField] public Game game;
-    //[SerializeField] float percentage;
-    private void Start()
-    {
-        
-    }
 
-
+    
     private void Update()
     {
         if(status == CardStatus.rotating_to_front || status == CardStatus.rotating_to_back)
@@ -41,7 +36,7 @@ public class Card : MonoBehaviour
             turnTimer += Time.deltaTime;
 
             float percentage = turnTimer / turnTargetTime;
-
+            // Laat de kaart draaien met een Slerp-animatie
             transform.rotation = Quaternion.Slerp(startRotation, targetRotation, percentage);
             if (percentage > 1)
             {
@@ -53,8 +48,6 @@ public class Card : MonoBehaviour
                 else if (status == CardStatus.rotating_to_front) 
                 { 
                     status = CardStatus.show_front;
-
-                    //game.SelectCard(gameObject);
                 }
             }
         }
@@ -80,16 +73,16 @@ public class Card : MonoBehaviour
             if (status == CardStatus.show_back)
             {
                 game.SelectCard(gameObject);
-                TurnToFront();
+                TurnToFront();// Draai de kaart naar de voorkant
             }
 
             else if (status == CardStatus.show_front)
             {
-                TurnToBack();
+                TurnToBack(); // Draai de kaart terug naar de achterkant
             }
         }
     }
-    
+    // Start het draaien naar de voorkant
     public void TurnToFront()
     {
         status = CardStatus.rotating_to_front;
@@ -98,6 +91,7 @@ public class Card : MonoBehaviour
         targetRotation = Quaternion.Euler(0, 180, 0);
     }
 
+    // Start het draaien naar de achterkant
     public void TurnToBack()
     {
         status = CardStatus.rotating_to_back;
@@ -105,7 +99,7 @@ public class Card : MonoBehaviour
         startRotation = transform.rotation;
         targetRotation = Quaternion.Euler(0, 0, 0);
     }
-
+    // Zoek en sla de renderers voor de voor- en achterkant van de kaart op
     private void GetFrontAndBackSpriteRenderers()
     {
         foreach(Transform t  in transform)
@@ -121,7 +115,7 @@ public class Card : MonoBehaviour
             }
         }
     }
-
+    // Stel een nieuwe sprite in voor de voorkant
     public void SetFront(Sprite sprite)
     {
         if (frontRenderer != null)
@@ -129,7 +123,7 @@ public class Card : MonoBehaviour
             frontRenderer.sprite = sprite;
         }
     }
-
+    // Stel een nieuwe sprite in voor de achterkant
     public void SetBack(Sprite sprite)
     {
         if (backRenderer != null)
@@ -137,7 +131,7 @@ public class Card : MonoBehaviour
             backRenderer.sprite = sprite;
         }
     }
-
+    // Verkrijg de grootte van de voorkant
     public Vector2 GetFrontSize()
     {
         if(frontRenderer == null)
@@ -146,7 +140,7 @@ public class Card : MonoBehaviour
         }
         return frontRenderer.bounds.size;
     }
-
+    // Verkrijg de grootte van de achterkant
     public Vector2 GetBackSize()
     {
         if (backRenderer == null)

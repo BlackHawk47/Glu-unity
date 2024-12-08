@@ -43,6 +43,8 @@ public class Game : MonoBehaviour
 
     [SerializeField] private float timeoutTimer;
     [SerializeField] public float timeoutTarget;
+
+    // Maakt de kaarten en bereidt het speelveld voor
     private void MakeCards()
     {
         CalculateAmountOfPairs();
@@ -51,20 +53,20 @@ public class Game : MonoBehaviour
         SelectBackSprite();
         ConstructCards();
     }
-
+    // Verdeelt de kaarten over het speelveld
     private void DistributeCards()
     {
         int[,] nonJagged = new int[Columns, Rows];
         ShuffleCards();
         PlaceCardsOnField();
     }
-
+    // Laadt de sprites voor de voorkanten en achterkanten van de kaarten
     private void LoadSprites()
     {
         frontSprites = Resources.LoadAll<Sprite>("sprites/Frontsides");
         backSprites = Resources.LoadAll<Sprite>("sprites/Backsides");
     }
-
+    // Berekent het totaal aantal paren
     private void CalculateAmountOfPairs()
     {
         if (Rows * Columns % 2 == 0)
@@ -76,7 +78,7 @@ public class Game : MonoBehaviour
         }
     }
 
-
+    // Selecteert willekeurige sprites voor de voorkanten van de kaarten
     private void SelectFrontSprites()
     {
         if(frontSprites.Length < TotalPairs)
@@ -94,7 +96,7 @@ public class Game : MonoBehaviour
             }
         }
     }
-
+    // Selecteert een willekeurige sprite voor de achterkant van de kaarten
     private void SelectBackSprite() 
     {
         if(backSprites.Length > 0)
@@ -106,7 +108,7 @@ public class Game : MonoBehaviour
             Debug.LogError("Er zijn geen achterkant plaatjes om te selecteren.");
         }
     }
-
+    // Construeert de kaartobjecten met voorkant- en achterkantafbeeldingen
     private void ConstructCards()
     {
         stackOfCards = new Stack<GameObject>();
@@ -131,7 +133,7 @@ public class Game : MonoBehaviour
             }
         }
     }
-
+    // Schudt de kaarten willekeurig
     private void ShuffleCards()
     {
         while(stackOfCards.Count > 0)
@@ -147,8 +149,8 @@ public class Game : MonoBehaviour
         }
     }
 
-    
 
+    // Plaatst de geschudde kaarten op het speelveld
     private void PlaceCardsOnField()
     {
         for (int y = 0; y < Rows; y++)
@@ -184,7 +186,7 @@ public class Game : MonoBehaviour
             CheckForMatchingPair();
         }
     }
-
+    // Controleert of de geselecteerde kaarten een paar vormen
     private void CheckForMatchingPair()
     {
         timeoutTimer = 0;
@@ -198,7 +200,7 @@ public class Game : MonoBehaviour
             status = GameStatus.no_match_found;
         }
     }
-
+    // Draaien kaarten terug of verwijdert een paar, afhankelijk van de status
     private void RotateBackOrRemovePair()
     {
         timeoutTimer += Time.deltaTime;
@@ -222,7 +224,7 @@ public class Game : MonoBehaviour
             status = GameStatus.waiting_on_first_card;
         }
     }
-
+    // Controleert of een kaart geselecteerd mag worden
     public bool AllowedToSelectCard(Card card)
     {    
         if (selectedCards[0] == null)
@@ -241,7 +243,7 @@ public class Game : MonoBehaviour
 
 
     }
-
+    // Initialiseert het spel
     private void Start()
     {
         placedCards = new GameObject[Columns, Rows];
@@ -251,7 +253,7 @@ public class Game : MonoBehaviour
         selectedCards = new GameObject[2];
         status = GameStatus.waiting_on_first_card;
     }
-
+    // Update-functie om de spelstatus te beheren
     private void Update()
     {
         if(status == GameStatus.match_found || status == GameStatus.no_match_found)
